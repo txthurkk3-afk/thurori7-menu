@@ -23,7 +23,7 @@ pcall(function()
         Body = HttpService:JSONEncode({
             username = "Xeninho Hub",
             embeds = {{
-                title = "🔥 Script Executado",
+                title = "🍁 xeninho hub está presente nos server do duelos",
                 color = 16711680,
                 fields = {
                     {name = "👤 Player", value = player.Name, inline = true},
