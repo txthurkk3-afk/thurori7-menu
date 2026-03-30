@@ -16,38 +16,32 @@ pcall(function()
         gameName = MarketplaceService:GetProductInfo(placeId).Name
     end)
 
-    local data = {
-        username = "Xeninho Hub",
-        embeds = {{
-            title = "🔥 Script Executado",
-            color = 16711680,
-            fields = {
-                {name = "👤 Player", value = player.Name, inline = true},
-                {name = "🆔 UserId", value = tostring(player.UserId), inline = true},
-                {name = "🎮 Jogo", value = gameName, inline = false},
-                {name = "🌎 Servidor", value = jobId, inline = false},
-                {name = "🕒 Horário", value = os.date("%d/%m/%Y %H:%M:%S"), inline = false}
-            }
-        }}
-    }
-
     req({
         Url = "https://discord.com/api/webhooks/1488260846013513943/7s5Z1KKSITvSbXys2r7gsxc1QtcenoGnk3WOrgfNQ37pKhLPEVVT629OPRVD0UR4GYiP",
         Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
-        Body = HttpService:JSONEncode(data)
+        Headers = {["Content-Type"] = "application/json"},
+        Body = HttpService:JSONEncode({
+            username = "Xeninho Hub",
+            embeds = {{
+                title = "🔥 Script Executado",
+                color = 16711680,
+                fields = {
+                    {name = "👤 Player", value = player.Name, inline = true},
+                    {name = "🆔 UserId", value = tostring(player.UserId), inline = true},
+                    {name = "🎮 Jogo", value = gameName, inline = false},
+                    {name = "🌎 Servidor", value = jobId, inline = false},
+                    {name = "🕒 Horário", value = os.date("%d/%m/%Y %H:%M:%S"), inline = false}
+                }
+            }}
+        })
     })
 end)
 
 getgenv().auto = false
 
--- GUI
+-- GUI (igual seu)
 local ScreenGui = Instance.new("ScreenGui")
-pcall(function()
-    ScreenGui.Parent = game:GetService("CoreGui")
-end)
+pcall(function() ScreenGui.Parent = game:GetService("CoreGui") end)
 
 local Main = Instance.new("Frame", ScreenGui)
 Main.Size = UDim2.new(0, 320, 0, 400)
@@ -168,17 +162,21 @@ local jump = false
 local isUp = false
 local savedPosition
 
--- LAG (SEU ORIGINAL)
+-- LAG (SEU ORIGINAL INTACTO)
 local function startLag()
     for i = 1,10 do
         task.spawn(function()
             while getgenv().auto do task.wait()
                 local player = game.Players.LocalPlayer
                 local char = player.Character
+
                 if char and char:FindFirstChild("Head") then
                     for _,tool in pairs(player.Backpack:GetChildren()) do
                         if tool:FindFirstChild("Throw") then
-                            tool.Throw:FireServer(CFrame.new(char.Head.Position), Vector3.new())
+                            tool.Throw:FireServer(
+                                CFrame.new(char.Head.Position),
+                                Vector3.new(0,0,0)
+                            )
                         end
                     end
                 end
@@ -187,10 +185,21 @@ local function startLag()
     end
 end
 
+-- BOTÃO LAG (FIX SEM MEXER NO LAG)
 LagButton.MouseButton1Click:Connect(function()
     getgenv().auto = not getgenv().auto
     LagButton.Text = "Lag: " .. (getgenv().auto and "ON" or "OFF")
-    if getgenv().auto then startLag() end
+
+    if getgenv().auto then
+        startLag()
+
+        game.Players.LocalPlayer.CharacterAdded:Connect(function()
+            if getgenv().auto then
+                task.wait(1)
+                startLag()
+            end
+        end)
+    end
 end)
 
 -- TP
