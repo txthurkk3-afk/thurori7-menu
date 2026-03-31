@@ -1,40 +1,42 @@
--- WEBHOOK PRO (LOG EXECUÇÃO)
-pcall(function()
-    local req = request or http_request or syn.request
-    local HttpService = game:GetService("HttpService")
-    local Players = game:GetService("Players")
-    local MarketplaceService = game:GetService("MarketplaceService")
-
-    if not req then return end
-
-    local player = Players.LocalPlayer
-    local placeId = game.PlaceId
-    local jobId = game.JobId
-
-    local gameName = "Desconhecido"
+-- WEBHOOK PRO (LOG EXECUÇÃO) [FIXADO]
+task.spawn(function()
     pcall(function()
-        gameName = MarketplaceService:GetProductInfo(placeId).Name
-    end)
+        local req = request or http_request or (syn and syn.request)
+        if not req then return end
 
-    req({
-        Url = "https://discord.com/api/webhooks/1488260846013513943/7s5Z1KKSITvSbXys2r7gsxc1QtcenoGnk3WOrgfNQ37pKhLPEVVT629OPRVD0UR4GYiP",
-        Method = "POST",
-        Headers = {["Content-Type"] = "application/json"},
-        Body = HttpService:JSONEncode({
-            username = "Xeninho Hub",
-            embeds = {{
-                title = "🍁 xeninho hub está presente nos server do duelos",
-                color = 16711680,
-                fields = {
-                    {name = "👤 Player", value = player.Name, inline = true},
-                    {name = "🆔 UserId", value = tostring(player.UserId), inline = true},
-                    {name = "🎮 Jogo", value = gameName, inline = false},
-                    {name = "🌎 Servidor", value = jobId, inline = false},
-                    {name = "🕒 Horário", value = os.date("%d/%m/%Y %H:%M:%S"), inline = false}
-                }
-            }}
+        local HttpService = game:GetService("HttpService")
+        local Players = game:GetService("Players")
+        local MarketplaceService = game:GetService("MarketplaceService")
+
+        local player = Players.LocalPlayer
+        local placeId = game.PlaceId
+        local jobId = game.JobId
+
+        local gameName = "Desconhecido"
+        pcall(function()
+            gameName = MarketplaceService:GetProductInfo(placeId).Name
+        end)
+
+        req({
+            Url = "https://discord.com/api/webhooks/1488335049576157358/rM78z6lBE5LPVRZa2ba25SQw4zNasFD6M1Cit-nnL_LZ39NzMF_gJ08htMRxv9I2t26Z",
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode({
+                username = "Xeninho Hub",
+                embeds = {{
+                    title = "🍁 xeninho hub está presente no duelos.",
+                    color = 16711680,
+                    fields = {
+                        {name = "👤 Player", value = player.Name, inline = true},
+                        {name = "🆔 UserId", value = tostring(player.UserId), inline = true},
+                        {name = "🎮 Jogo", value = gameName, inline = false},
+                        {name = "🌎 Servidor", value = jobId, inline = false},
+                        {name = "🕒 Horário", value = os.date("%d/%m/%Y %H:%M:%S"), inline = false}
+                    }
+                }}
+            })
         })
-    })
+    end)
 end)
 
 getgenv().auto = false
@@ -162,7 +164,7 @@ local jump = false
 local isUp = false
 local savedPosition
 
--- LAG (SEU ORIGINAL INTACTO)
+-- LAG
 local function startLag()
     for i = 1,10 do
         task.spawn(function()
@@ -185,14 +187,12 @@ local function startLag()
     end
 end
 
--- BOTÃO LAG (FIX SEM MEXER NO LAG)
 LagButton.MouseButton1Click:Connect(function()
     getgenv().auto = not getgenv().auto
     LagButton.Text = "Lag: " .. (getgenv().auto and "ON" or "OFF")
 
     if getgenv().auto then
         startLag()
-
         game.Players.LocalPlayer.CharacterAdded:Connect(function()
             if getgenv().auto then
                 task.wait(1)
@@ -218,7 +218,7 @@ TPButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- JUMP
+-- JUMP (SEU ORIGINAL)
 JumpButton.MouseButton1Click:Connect(function()
     jump = not jump
     JumpButton.Text = "Jump: " .. (jump and "ON" or "OFF")
@@ -239,7 +239,7 @@ JumpButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- ESP
+-- ESP (SEU ORIGINAL)
 ESPButton.MouseButton1Click:Connect(function()
     esp = not esp
     ESPButton.Text = "ESP: " .. (esp and "ON" or "OFF")
