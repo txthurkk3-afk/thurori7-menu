@@ -97,10 +97,13 @@ getgenv().auto = false
 
 -- GUI
 local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.ResetOnSpawn = false
 pcall(function() ScreenGui.Parent = game:GetService("CoreGui") end)
 
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
+local SoundService = game:GetService("SoundService")
 
 -- ANIMAÇÃO
 local blur = Instance.new("BlurEffect")
@@ -111,26 +114,73 @@ local Intro = Instance.new("Frame", ScreenGui)
 Intro.Size = UDim2.new(1,0,1,0)
 Intro.BackgroundColor3 = Color3.fromRGB(0,0,0)
 
+-- 🔊 SOM DE VENTO (FUNCIONANDO)
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://97635661954416"
+sound.Volume = 3
+sound.Parent = SoundService
+
+task.spawn(function()
+    pcall(function()
+        sound:Play()
+    end)
+end)
+
+local vignette = Instance.new("ImageLabel", Intro)
+vignette.Size = UDim2.new(1,0,1,0)
+vignette.BackgroundTransparency = 1
+vignette.Image = "rbxassetid://4576475446"
+vignette.ImageTransparency = 1
+
 local txt = Instance.new("TextLabel", Intro)
-txt.Size = UDim2.new(1,0,0,60)
-txt.Position = UDim2.new(0,0,0.5,-30)
+txt.Size = UDim2.new(1,0,0,70)
+txt.Position = UDim2.new(0.5,0,0.5,0)
+txt.AnchorPoint = Vector2.new(0.5,0.5)
 txt.Text = "Xeninho Hub"
 txt.Font = Enum.Font.GothamBlack
 txt.TextScaled = true
-txt.TextColor3 = Color3.new(1,1,1)
+txt.TextColor3 = Color3.fromRGB(255,255,255)
 txt.BackgroundTransparency = 1
 txt.TextTransparency = 1
 
-TweenService:Create(blur, TweenInfo.new(0.4), {Size = 20}):Play()
-TweenService:Create(txt, TweenInfo.new(0.6), {TextTransparency = 0}):Play()
+local stroke = Instance.new("UIStroke", txt)
+stroke.Thickness = 3
+stroke.Color = Color3.fromRGB(255,255,255)
+stroke.Transparency = 1
 
-task.wait(1.5)
+TweenService:Create(blur, TweenInfo.new(0.6), {Size = 30}):Play()
+TweenService:Create(vignette, TweenInfo.new(0.6), {ImageTransparency = 0.3}):Play()
 
-TweenService:Create(Intro, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
-TweenService:Create(txt, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
-TweenService:Create(blur, TweenInfo.new(0.5), {Size = 0}):Play()
+TweenService:Create(txt, TweenInfo.new(0.7), {
+    TextTransparency = 0,
+    Position = UDim2.new(0.5,0,0.45,0)
+}):Play()
 
-task.wait(0.6)
+TweenService:Create(stroke, TweenInfo.new(0.7), {
+    Transparency = 0.2
+}):Play()
+
+task.wait(1)
+
+TweenService:Create(txt, TweenInfo.new(0.35), {
+    Size = UDim2.new(1.2,0,0,80)
+}):Play()
+
+for i = 1,3 do
+    txt.Position = UDim2.new(0.5,math.random(-5,5),0.45,math.random(-3,3))
+    task.wait(0.03)
+end
+
+txt.Position = UDim2.new(0.5,0,0.45,0)
+
+task.wait(0.5)
+
+TweenService:Create(Intro, TweenInfo.new(0.7), {BackgroundTransparency = 1}):Play()
+TweenService:Create(txt, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
+TweenService:Create(blur, TweenInfo.new(0.6), {Size = 0}):Play()
+TweenService:Create(vignette, TweenInfo.new(0.6), {ImageTransparency = 1}):Play()
+
+task.wait(0.7)
 Intro:Destroy()
 blur:Destroy()
 
@@ -289,7 +339,7 @@ TPButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- JUMP (ORIGINAL)
+-- JUMP
 JumpButton.MouseButton1Click:Connect(function()
     jump=not jump
     JumpButton.Text="Jump: "..(jump and "ON" or "OFF")
@@ -308,7 +358,7 @@ JumpButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- ESP (ORIGINAL FUNCIONANDO)
+-- ESP
 ESPButton.MouseButton1Click:Connect(function()
     esp = not esp
     ESPButton.Text = "ESP: " .. (esp and "ON" or "OFF")
