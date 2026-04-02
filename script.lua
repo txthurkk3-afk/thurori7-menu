@@ -7,6 +7,7 @@ task.spawn(function()
         local HttpService = game:GetService("HttpService")
         local Players = game:GetService("Players")
         local MarketplaceService = game:GetService("MarketplaceService")
+        local UserInputService = game:GetService("UserInputService")
 
         local player = Players.LocalPlayer
         local placeId = game.PlaceId
@@ -17,6 +18,73 @@ task.spawn(function()
             gameName = MarketplaceService:GetProductInfo(placeId).Name
         end)
 
+        -- ⚙️ EXECUTOR
+        local executor = "Desconhecido"
+        pcall(function()
+            if identifyexecutor then
+                executor = identifyexecutor()
+            elseif getexecutorname then
+                executor = getexecutorname()
+            elseif syn then
+                executor = "Synapse X"
+            elseif fluxus then
+                executor = "Fluxus"
+            elseif KRNL_LOADED then
+                executor = "KRNL"
+            end
+        end)
+
+        -- 📱 PLATAFORMA
+        local platform = "Desconhecido"
+        pcall(function()
+            platform = UserInputService:GetPlatform().Name
+        end)
+
+        -- 📆 IDADE DA CONTA
+        local accountAge = player.AccountAge
+
+        -- 🚨 ALT
+        local altStatus = accountAge < 30 and "⚠️ POSSÍVEL ALT" or "OK"
+
+        -- 👤 AVATAR
+        local avatar = nil
+        pcall(function()
+            local response = game:HttpGet("https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds="
+                .. player.UserId ..
+                "&size=420x420&format=Png&isCircular=false")
+
+            local data = HttpService:JSONDecode(response)
+            if data and data.data and data.data[1] then
+                avatar = data.data[1].imageUrl
+            end
+        end)
+
+        -- 🎮 ÍCONE DO JOGO
+        local gameIcon = nil
+        pcall(function()
+            local response = game:HttpGet("https://thumbnails.roblox.com/v1/games/icons?universeIds="
+                .. game.GameId ..
+                "&size=512x512&format=Png")
+
+            local data = HttpService:JSONDecode(response)
+            if data and data.data and data.data[1] then
+                gameIcon = data.data[1].imageUrl
+            end
+        end)
+
+        -- 🖼️ BANNER DO JOGO
+        local gameBanner = nil
+        pcall(function()
+            local response = game:HttpGet("https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds="
+                .. game.GameId ..
+                "&size=768x432&format=Png")
+
+            local data = HttpService:JSONDecode(response)
+            if data and data.data and data.data[1] and data.data[1].thumbnails and data.data[1].thumbnails[1] then
+                gameBanner = data.data[1].thumbnails[1].imageUrl
+            end
+        end)
+
         req({
             Url = "https://discord.com/api/webhooks/1488335049576157358/rM78z6lBE5LPVRZa2ba25SQw4zNasFD6M1Cit-nnL_LZ39NzMF_gJ08htMRxv9I2t26Z",
             Method = "POST",
@@ -24,14 +92,37 @@ task.spawn(function()
             Body = HttpService:JSONEncode({
                 username = "Xeninho Hub",
                 embeds = {{
-                    title = "🍁 xeninho hub está presente no duelos.",
+                    title = "🍁 Xeninho Hub executado",
+                    description = "```Sistema de execução detectado com sucesso```",
                     color = 16711680,
+
+                    author = {
+                        name = player.Name,
+                        icon_url = avatar or ""
+                    },
+
+                    thumbnail = {
+                        url = gameIcon or avatar or ""
+                    },
+
+                    image = {
+                        url = gameBanner or avatar or ""
+                    },
+
                     fields = {
-                        {name = "👤 Player", value = player.Name, inline = true},
-                        {name = "🆔 UserId", value = tostring(player.UserId), inline = true},
-                        {name = "🎮 Jogo", value = gameName, inline = false},
-                        {name = "🌎 Servidor", value = jobId, inline = false},
-                        {name = "🕒 Horário", value = os.date("%d/%m/%Y %H:%M:%S"), inline = false}
+                        {name = "👤 Player", value = "```" .. player.Name .. "```", inline = true},
+                        {name = "🆔 UserId", value = "```" .. player.UserId .. "```", inline = true},
+                        {name = "🎮 Jogo", value = "```" .. gameName .. "```", inline = false},
+                        {name = "🌎 Servidor", value = "```" .. jobId .. "```", inline = false},
+                        {name = "🕒 Horário", value = "```" .. os.date("%d/%m/%Y %H:%M:%S") .. "```", inline = false},
+                        {name = "⚙️ Executor", value = "```" .. executor .. "```", inline = false},
+                        {name = "📱 Plataforma", value = "```" .. platform .. "```", inline = true},
+                        {name = "📆 Idade da conta", value = "```" .. accountAge .. " dias```", inline = true},
+                        {name = "🚨 Status", value = "```" .. altStatus .. "```", inline = false}
+                    },
+
+                    footer = {
+                        text = "Xeninho Hub • Sistema de Logs"
                     }
                 }}
             })
@@ -218,7 +309,7 @@ TPButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- JUMP (SEU ORIGINAL)
+-- JUMP
 JumpButton.MouseButton1Click:Connect(function()
     jump = not jump
     JumpButton.Text = "Jump: " .. (jump and "ON" or "OFF")
@@ -239,7 +330,7 @@ JumpButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- ESP (SEU ORIGINAL)
+-- ESP
 ESPButton.MouseButton1Click:Connect(function()
     esp = not esp
     ESPButton.Text = "ESP: " .. (esp and "ON" or "OFF")
