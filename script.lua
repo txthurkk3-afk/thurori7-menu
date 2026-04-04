@@ -408,7 +408,7 @@ Footer.Size = UDim2.new(1,0,0,22)
 Footer.Position = UDim2.new(0,0,1,-24)
 Footer.BackgroundTransparency = 1
 Footer.TextScaled = true
-Footer.Text = "dc ; 7tzzyy"
+Footer.Text = "dc ; r1chsoull"
 
 task.spawn(function()
     local colors = {
