@@ -193,13 +193,14 @@ Main.Active = true
 pcall(function() Main.Draggable = true end)
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0,14)
 
--- GRADIENTE AZUL
+-- GRADIENTE ARGENTINA 🇦🇷 (COR CERTA)
 local Gradient = Instance.new("UIGradient", Main)
 Gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(180,220,255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(80,150,255))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(116, 172, 223)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(116, 172, 223))
 })
-Gradient.Rotation = 45
+Gradient.Rotation = 90
 
 -- BORDA RGB
 local Stroke = Instance.new("UIStroke", Main)
