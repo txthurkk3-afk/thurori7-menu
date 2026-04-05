@@ -116,7 +116,7 @@ Intro.BackgroundColor3 = Color3.fromRGB(0,0,0)
 
 -- 🔊 SOM DE VENTO (FUNCIONANDO)
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://134879667307270"
+sound.SoundId = "rbxassetid://"
 sound.Volume = 3
 sound.Parent = SoundService
 
