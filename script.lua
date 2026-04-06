@@ -247,7 +247,10 @@ Container.Size = UDim2.new(1,0,1,-80)
 Container.Position = UDim2.new(0,0,0,50)
 Container.BackgroundTransparency = 1
 Container.CanvasSize = UDim2.new(0,0,0,0)
-Container.ScrollBarThickness = 4
+Container.ScrollBarThickness = 0
+
+Container.ScrollingDirection = Enum.ScrollingDirection.Y
+Container.ScrollBarImageTransparency = 1
 
 local minimized = false
 Minimize.MouseButton1Click:Connect(function()
@@ -275,6 +278,21 @@ local function makeButton(text,color,desc)
     btn.TextScaled = true
     btn.TextColor3 = Color3.fromRGB(235,235,235)
     Instance.new("UICorner",btn).CornerRadius = UDim.new(0,10)
+btn.MouseEnter:Connect(function()
+    btn:TweenSize(UDim2.new(0.62,0,1,0), "Out", "Quad", 0.1, true)
+end)
+
+btn.MouseLeave:Connect(function()
+    btn:TweenSize(UDim2.new(0.6,0,1,0), "Out", "Quad", 0.1, true)
+end)
+
+btn.MouseButton1Down:Connect(function()
+    btn:TweenSize(UDim2.new(0.58,0,0.95,0), "Out", "Quad", 0.05, true)
+end)
+
+btn.MouseButton1Up:Connect(function()
+    btn:TweenSize(UDim2.new(0.6,0,1,0), "Out", "Quad", 0.05, true)
+end)
 
     local label = Instance.new("TextLabel", frame)
     label.Size = UDim2.new(0.4,0,1,0)
@@ -297,7 +315,7 @@ local ESPButton = makeButton("ESP: OFF", Color3.fromRGB(40,40,40), "Ver players"
 local ScriptButton = makeButton("Script OP", Color3.fromRGB(180,30,30), "Kill All")
 local AimbotButton = makeButton("Aimbot", Color3.fromRGB(40,40,40), "Mira")
 local JumpButton = makeButton("Jump: OFF", Color3.fromRGB(150,100,0), "Auto pulo")
-local DuplicarButton = makeButton("Duplicar", Color3.fromRGB(120,0,120), "Dupe")
+local DuplicarButton = makeButton("Duplicar", Color3.fromRGB(120,0,120), "Duplicar inventario")
 
 -- VARS
 local esp=false
