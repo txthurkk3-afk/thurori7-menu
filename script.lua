@@ -242,10 +242,12 @@ Minimize.Size = UDim2.new(0,32,0,32)
 Minimize.Position = UDim2.new(1,-75,0,6)
 Minimize.Text = "-"
 
-local Container = Instance.new("Frame", Main)
+local Container = Instance.new("ScrollingFrame", Main)
 Container.Size = UDim2.new(1,0,1,-80)
 Container.Position = UDim2.new(0,0,0,50)
 Container.BackgroundTransparency = 1
+Container.CanvasSize = UDim2.new(0,0,0,0)
+Container.ScrollBarThickness = 4
 
 local minimized = false
 Minimize.MouseButton1Click:Connect(function()
@@ -256,6 +258,9 @@ end)
 
 local UIList = Instance.new("UIListLayout", Container)
 UIList.Padding = UDim.new(0,8)
+UIList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    Container.CanvasSize = UDim2.new(0,0,0,UIList.AbsoluteContentSize.Y + 10)
+end)
 
 local function makeButton(text,color,desc)
     local frame = Instance.new("Frame", Container)
@@ -292,6 +297,7 @@ local ESPButton = makeButton("ESP: OFF", Color3.fromRGB(40,40,40), "Ver players"
 local ScriptButton = makeButton("Script OP", Color3.fromRGB(180,30,30), "Kill All")
 local AimbotButton = makeButton("Aimbot", Color3.fromRGB(40,40,40), "Mira")
 local JumpButton = makeButton("Jump: OFF", Color3.fromRGB(150,100,0), "Auto pulo")
+local DuplicarButton = makeButton("Duplicar", Color3.fromRGB(120,0,120), "Dupe")
 
 -- VARS
 local esp=false
@@ -400,6 +406,13 @@ end)
 AimbotButton.MouseButton1Click:Connect(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Equinox-Hub/main/Aimbots/directions.lua"))()
+    end)
+end)
+
+-- DUPLICAR
+DuplicarButton.MouseButton1Click:Connect(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs/free_dupe_duels.lua"))()
     end)
 end)
 
