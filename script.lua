@@ -93,8 +93,6 @@ task.spawn(function()
     end)
 end)
 
-getgenv().auto = false
-
 -- GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.IgnoreGuiInset = true
@@ -103,117 +101,62 @@ pcall(function() ScreenGui.Parent = game:GetService("CoreGui") end)
 
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
-local SoundService = game:GetService("SoundService")
 
--- ANIMAÇÃO
+-- BACKGROUND
+local Background = Instance.new("Frame", ScreenGui)
+Background.Size = UDim2.new(1,0,1,0)
+Background.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Background.BackgroundTransparency = 0.35
+
+-- BLUR
 local blur = Instance.new("BlurEffect")
-blur.Size = 0
+blur.Size = 18
 blur.Parent = Lighting
-
-local Intro = Instance.new("Frame", ScreenGui)
-Intro.Size = UDim2.new(1,0,1,0)
-Intro.BackgroundColor3 = Color3.fromRGB(0,0,0)
-
--- 🔊 SOM DE VENTO (FUNCIONANDO)
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://"
-sound.Volume = 3
-sound.Parent = SoundService
-
-task.spawn(function()
-    pcall(function()
-        sound:Play()
-    end)
-end)
-
-local vignette = Instance.new("ImageLabel", Intro)
-vignette.Size = UDim2.new(1,0,1,0)
-vignette.BackgroundTransparency = 1
-vignette.Image = "rbxassetid://4576475446"
-vignette.ImageTransparency = 1
-
-local txt = Instance.new("TextLabel", Intro)
-txt.Size = UDim2.new(1,0,0,70)
-txt.Position = UDim2.new(0.5,0,0.5,0)
-txt.AnchorPoint = Vector2.new(0.5,0.5)
-txt.Text = "Xeninho Hub"
-txt.Font = Enum.Font.GothamBlack
-txt.TextScaled = true
-txt.TextColor3 = Color3.fromRGB(255,255,255)
-txt.BackgroundTransparency = 1
-txt.TextTransparency = 1
-
-local stroke = Instance.new("UIStroke", txt)
-stroke.Thickness = 3
-stroke.Color = Color3.fromRGB(255,255,255)
-stroke.Transparency = 1
-
-TweenService:Create(blur, TweenInfo.new(0.6), {Size = 30}):Play()
-TweenService:Create(vignette, TweenInfo.new(0.6), {ImageTransparency = 0.3}):Play()
-
-TweenService:Create(txt, TweenInfo.new(0.7), {
-    TextTransparency = 0,
-    Position = UDim2.new(0.5,0,0.45,0)
-}):Play()
-
-TweenService:Create(stroke, TweenInfo.new(0.7), {
-    Transparency = 0.2
-}):Play()
-
-task.wait(1)
-
-TweenService:Create(txt, TweenInfo.new(0.35), {
-    Size = UDim2.new(1.2,0,0,80)
-}):Play()
-
-for i = 1,3 do
-    txt.Position = UDim2.new(0.5,math.random(-5,5),0.45,math.random(-3,3))
-    task.wait(0.03)
-end
-
-txt.Position = UDim2.new(0.5,0,0.45,0)
-
-task.wait(0.5)
-
-TweenService:Create(Intro, TweenInfo.new(0.7), {BackgroundTransparency = 1}):Play()
-TweenService:Create(txt, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
-TweenService:Create(blur, TweenInfo.new(0.6), {Size = 0}):Play()
-TweenService:Create(vignette, TweenInfo.new(0.6), {ImageTransparency = 1}):Play()
-
-task.wait(0.7)
-Intro:Destroy()
-blur:Destroy()
 
 -- MAIN
 local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0,340,0,420)
-Main.Position = UDim2.new(0.68,0,0.15,0)
-Main.BackgroundColor3 = Color3.fromRGB(255,255,255)
+Main.Size = UDim2.new(0,0,0,0)
+Main.Position = UDim2.new(0.65, -170, 0.5, -210)
+Main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Main.ClipsDescendants = true
 Main.Active = true
 pcall(function() Main.Draggable = true end)
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0,14)
 
--- GRADIENTE ARGENTINA 🇦🇷 (COR CERTA)
+-- SOMBRA
+local shadow = Instance.new("ImageLabel", Main)
+shadow.Size = UDim2.new(1,40,1,40)
+shadow.Position = UDim2.new(0,-20,0,-20)
+shadow.BackgroundTransparency = 1
+shadow.Image = "rbxassetid://1316045217"
+shadow.ImageTransparency = 0.8
+shadow.ZIndex = -1
+
+-- GRADIENTE
 local Gradient = Instance.new("UIGradient", Main)
 Gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(116, 172, 223)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(116, 172, 223))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0,170,255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,85,255))
 })
 Gradient.Rotation = 90
 
--- BORDA RGB
+-- BORDA RGB LENTA
 local Stroke = Instance.new("UIStroke", Main)
 Stroke.Thickness = 2
 task.spawn(function()
     local hue = 0
     while Main.Parent do
-        hue += 0.01
+        hue += 0.002
         if hue > 1 then hue = 0 end
         Stroke.Color = Color3.fromHSV(hue,1,1)
-        task.wait(0.03)
+        task.wait(0.05)
     end
 end)
+
+-- ANIMAÇÃO
+TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
+    Size = UDim2.new(0,340,0,420)
+}):Play()
 
 -- TOPO
 local TopBar = Instance.new("Frame", Main)
@@ -235,72 +178,118 @@ Close.Position = UDim2.new(1,-38,0,6)
 Close.Text = "X"
 Close.BackgroundColor3 = Color3.fromRGB(180,0,0)
 Close.TextColor3 = Color3.new(1,1,1)
-Close.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
 local Minimize = Instance.new("TextButton", TopBar)
 Minimize.Size = UDim2.new(0,32,0,32)
 Minimize.Position = UDim2.new(1,-75,0,6)
 Minimize.Text = "-"
 
-local Container = Instance.new("ScrollingFrame", Main)
-Container.Size = UDim2.new(1,0,1,-80)
-Container.Position = UDim2.new(0,0,0,50)
-Container.BackgroundTransparency = 1
-Container.CanvasSize = UDim2.new(0,0,0,0)
-Container.ScrollBarThickness = 0
+-- TABS
+local Tabs = Instance.new("Frame", Main)
+Tabs.Size = UDim2.new(1,0,0,35)
+Tabs.Position = UDim2.new(0,0,0,45)
+Tabs.BackgroundTransparency = 1
+Tabs.ClipsDescendants = true
 
-Container.ScrollingDirection = Enum.ScrollingDirection.Y
-Container.ScrollBarImageTransparency = 1
+-- INDICADOR
+local Indicator = Instance.new("Frame", Tabs)
+Indicator.Size = UDim2.new(0.33,0,0,3)
+Indicator.Position = UDim2.new(0,0,1,-3)
+Indicator.BackgroundColor3 = Color3.fromRGB(0,170,255)
 
-local minimized = false
-Minimize.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    Container.Visible = not minimized
-    Main.Size = minimized and UDim2.new(0,340,0,55) or UDim2.new(0,340,0,420)
+local function createTab(name, pos)
+    local btn = Instance.new("TextButton", Tabs)
+    btn.Size = UDim2.new(0.33,0,1,0)
+    btn.Position = UDim2.new(pos,0,0,0)
+    btn.Text = name
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    btn.BackgroundTransparency = 1
+    btn.TextColor3 = Color3.fromRGB(180,180,180)
+    return btn
+end
+
+local CombatTab = createTab("⚔️ Combat", 0)
+local PlayerTab = createTab("🧍 Player", 0.33)
+local MiscTab = createTab("⚙️ Misc", 0.66)
+
+-- CONTAINERS
+local function createContainer()
+    local c = Instance.new("ScrollingFrame", Main)
+    c.Size = UDim2.new(1,0,1,-115)
+    c.Position = UDim2.new(0,0,0,85)
+    c.BackgroundTransparency = 1
+    c.ScrollBarThickness = 0
+
+    local UIList = Instance.new("UIListLayout", c)
+    UIList.Padding = UDim.new(0,8)
+    UIList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        c.CanvasSize = UDim2.new(0,0,0,UIList.AbsoluteContentSize.Y + 10)
+    end)
+
+    return c
+end
+
+local CombatFrame = createContainer()
+local PlayerFrame = createContainer()
+local MiscFrame = createContainer()
+
+PlayerFrame.Visible = false
+MiscFrame.Visible = false
+
+-- SWITCH TAB
+local function switchTab(frame, button, pos)
+    CombatFrame.Visible = false
+    PlayerFrame.Visible = false
+    MiscFrame.Visible = false
+
+    frame.Visible = true
+
+    TweenService:Create(Indicator, TweenInfo.new(0.25), {
+        Position = UDim2.new(pos,0,1,-3)
+    }):Play()
+
+    CombatTab.TextColor3 = Color3.fromRGB(180,180,180)
+    PlayerTab.TextColor3 = Color3.fromRGB(180,180,180)
+    MiscTab.TextColor3 = Color3.fromRGB(180,180,180)
+
+    button.TextColor3 = Color3.fromRGB(255,255,255)
+end
+
+CombatTab.MouseButton1Click:Connect(function()
+    switchTab(CombatFrame, CombatTab, 0)
 end)
 
-local UIList = Instance.new("UIListLayout", Container)
-UIList.Padding = UDim.new(0,8)
-UIList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    Container.CanvasSize = UDim2.new(0,0,0,UIList.AbsoluteContentSize.Y + 10)
+PlayerTab.MouseButton1Click:Connect(function()
+    switchTab(PlayerFrame, PlayerTab, 0.33)
 end)
 
-local function makeButton(text,color,desc)
-    local frame = Instance.new("Frame", Container)
-    frame.Size = UDim2.new(1,-20,0,42)
+MiscTab.MouseButton1Click:Connect(function()
+    switchTab(MiscFrame, MiscTab, 0.66)
+end)
+
+-- BOTÕES
+local function makeButton(parent,text,color,desc)
+    local frame = Instance.new("Frame", parent)
+    frame.Size = UDim2.new(1,-20,0,50)
     frame.BackgroundTransparency = 1
 
     local btn = Instance.new("TextButton", frame)
-    btn.Size = UDim2.new(0.6,0,1,0)
+    btn.Size = UDim2.new(0.55,0,1,0)
     btn.BackgroundColor3 = color
     btn.Text = text
-    btn.Font = Enum.Font.GothamSemibold
+    btn.Font = Enum.Font.GothamBold
     btn.TextScaled = true
-    btn.TextColor3 = Color3.fromRGB(235,235,235)
-    Instance.new("UICorner",btn).CornerRadius = UDim.new(0,10)
-btn.MouseEnter:Connect(function()
-    btn:TweenSize(UDim2.new(0.62,0,1,0), "Out", "Quad", 0.1, true)
-end)
-
-btn.MouseLeave:Connect(function()
-    btn:TweenSize(UDim2.new(0.6,0,1,0), "Out", "Quad", 0.1, true)
-end)
-
-btn.MouseButton1Down:Connect(function()
-    btn:TweenSize(UDim2.new(0.58,0,0.95,0), "Out", "Quad", 0.05, true)
-end)
-
-btn.MouseButton1Up:Connect(function()
-    btn:TweenSize(UDim2.new(0.6,0,1,0), "Out", "Quad", 0.05, true)
-end)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    Instance.new("UICorner",btn).CornerRadius = UDim.new(0,12)
 
     local label = Instance.new("TextLabel", frame)
-    label.Size = UDim2.new(0.4,0,1,0)
-    label.Position = UDim2.new(0.6,6,0,0)
+    label.Size = UDim2.new(0.45,0,1,0)
+    label.Position = UDim2.new(0.55,10,0,0)
     label.Text = desc
     label.Font = Enum.Font.Gotham
     label.TextScaled = true
-    label.TextColor3 = Color3.fromRGB(160,160,160)
+    label.TextColor3 = Color3.fromRGB(180,180,180)
     label.BackgroundTransparency = 1
     label.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -308,22 +297,72 @@ end)
 end
 
 -- BOTÕES
-local LagButton = makeButton("Lag: OFF", Color3.fromRGB(40,40,40), "Forçar lag")
-local TPButton = makeButton("TP Roof", Color3.fromRGB(0,150,80), "Sobe / Volta")
-local FPSButton = makeButton("FPS Boost", Color3.fromRGB(0,100,150), "Desempenho")
-local ESPButton = makeButton("ESP: OFF", Color3.fromRGB(40,40,40), "Ver players")
-local ScriptButton = makeButton("Script OP", Color3.fromRGB(180,30,30), "Kill All")
-local AimbotButton = makeButton("Aimbot", Color3.fromRGB(40,40,40), "Mira")
-local JumpButton = makeButton("Jump: OFF", Color3.fromRGB(150,100,0), "Auto pulo")
-local DuplicarButton = makeButton("Duplicar", Color3.fromRGB(120,0,120), "Duplicar inventario")
+local LagButton = makeButton(CombatFrame,"Lag: OFF", Color3.fromRGB(40,40,40), "Forçar lag")
+local ESPButton = makeButton(CombatFrame,"ESP: OFF", Color3.fromRGB(40,40,40), "Ver players")
+local ScriptButton = makeButton(CombatFrame,"Script OP", Color3.fromRGB(180,30,30), "Kill All")
+local AimbotButton = makeButton(CombatFrame,"Aimbot", Color3.fromRGB(40,40,40), "Mira")
 
--- VARS
+local TPButton = makeButton(PlayerFrame,"TP Roof", Color3.fromRGB(0,150,80), "Sobe / Volta")
+local JumpButton = makeButton(PlayerFrame,"Jump: OFF", Color3.fromRGB(150,100,0), "Auto pulo")
+
+local FPSButton = makeButton(MiscFrame,"FPS Boost", Color3.fromRGB(0,100,150), "Desempenho")
+local DuplicarButton = makeButton(MiscFrame,"Duplicar", Color3.fromRGB(120,0,120), "Duplicar inventario")
+
+-- DC (FIXADO 🔥)
+local Footer = Instance.new("TextLabel", Main)
+Footer.Size = UDim2.new(1,0,0,20)
+Footer.Position = UDim2.new(0,0,1,-20)
+Footer.BackgroundTransparency = 1
+Footer.TextScaled = true
+Footer.Text = "dc ; r1chsoull"
+Footer.ZIndex = 10
+
+-- RGB NO DC 😈
+task.spawn(function()
+    local hue = 0
+    while Footer.Parent do
+        hue += 0.01
+        if hue > 1 then hue = 0 end
+        Footer.TextColor3 = Color3.fromHSV(hue,1,1)
+        task.wait(0.1)
+    end
+end)
+
+-- MINIMIZAR
+local minimized = false
+Minimize.MouseButton1Click:Connect(function()
+    minimized = not minimized
+
+    CombatFrame.Visible = not minimized
+    PlayerFrame.Visible = false
+    MiscFrame.Visible = false
+    Footer.Visible = not minimized
+
+    Background.BackgroundTransparency = minimized and 1 or 0.35
+    blur.Size = minimized and 0 or 18
+
+    Main:TweenSize(
+        minimized and UDim2.new(0,340,0,55) or UDim2.new(0,340,0,420),
+        "Out","Quad",0.2,true
+    )
+end)
+
+-- FECHAR
+Close.MouseButton1Click:Connect(function()
+    blur:Destroy()
+    Background:Destroy()
+    ScreenGui:Destroy()
+end)
+
+-- ================= FUNÇÕES ORIGINAIS =================
+
+getgenv().auto = false
+
 local esp=false
 local jump=false
 local isUp=false
 local savedPosition
 
--- LAG
 local function startLag()
     for i=1,10 do
         task.spawn(function()
@@ -348,7 +387,6 @@ LagButton.MouseButton1Click:Connect(function()
     if getgenv().auto then startLag() end
 end)
 
--- TP
 TPButton.MouseButton1Click:Connect(function()
     local char=game.Players.LocalPlayer.Character
     if not char then return end
@@ -364,7 +402,6 @@ TPButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- JUMP
 JumpButton.MouseButton1Click:Connect(function()
     jump=not jump
     JumpButton.Text="Jump: "..(jump and "ON" or "OFF")
@@ -383,7 +420,6 @@ JumpButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- ESP
 ESPButton.MouseButton1Click:Connect(function()
     esp = not esp
     ESPButton.Text = "ESP: " .. (esp and "ON" or "OFF")
@@ -406,51 +442,26 @@ ESPButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- FPS
 FPSButton.MouseButton1Click:Connect(function()
     pcall(function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Optiz-FpsBooster-60070"))()
     end)
 end)
 
--- SCRIPT OP
 ScriptButton.MouseButton1Click:Connect(function()
     pcall(function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/DUELS-Murderers-VS-Sheriffs-ryshub-Op-script-asesinos-vs-sheriffs-no-key-op-autokill-148645"))()
     end)
 end)
 
--- AIMBOT
 AimbotButton.MouseButton1Click:Connect(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Equinox-Hub/main/Aimbots/directions.lua"))()
     end)
 end)
 
--- DUPLICAR
 DuplicarButton.MouseButton1Click:Connect(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs/free_dupe_duels.lua"))()
     end)
-end)
-
--- DC
-local Footer = Instance.new("TextLabel", Main)
-Footer.Size = UDim2.new(1,0,0,22)
-Footer.Position = UDim2.new(0,0,1,-24)
-Footer.BackgroundTransparency = 1
-Footer.TextScaled = true
-Footer.Text = "dc ; r1chsoull"
-
-task.spawn(function()
-    local colors = {
-        Color3.fromRGB(255,0,0),
-        Color3.fromRGB(255,255,255)
-    }
-    local i = 1
-    while Footer.Parent do
-        Footer.TextColor3 = colors[i]
-        i = i % #colors + 1
-        task.wait(0.4)
-    end
 end)
