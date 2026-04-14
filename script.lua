@@ -571,4 +571,55 @@ end)
 game.Players.PlayerAdded:Connect(function(player)
     if esp and player ~= game.Players.LocalPlayer and player.Character then
         local hl = Instance.new("Highlight")
-  
+        hl.FillColor = Color3.fromRGB(255,0,0)
+        hl.OutlineColor = Color3.fromRGB(255,255,255)
+        hl.Parent = player.Character
+        activeHighlights[player.UserId] = hl
+    end
+end)
+
+game.Players.PlayerRemoving:Connect(function(player)
+    if activeHighlights[player.UserId] then
+        activeHighlights[player.UserId]:Destroy()
+        activeHighlights[player.UserId] = nil
+    end
+end)
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(char)
+    if esp then
+        for _,p in pairs(game.Players:GetPlayers()) do
+            if p ~= game.Players.LocalPlayer and p.Character == char then
+                local hl = Instance.new("Highlight")
+                hl.FillColor = Color3.fromRGB(255,0,0)
+                hl.OutlineColor = Color3.fromRGB(255,255,255)
+                hl.Parent = char
+                activeHighlights[p.UserId] = hl
+                break
+            end
+        end
+    end
+end)
+
+FPSButton.MouseButton1Click:Connect(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Optiz-FpsBooster-60070"))()
+    end)
+end)
+
+ScriptButton.MouseButton1Click:Connect(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/DUELS-Murderers-VS-Sheriffs-ryshub-Op-script-asesinos-vs-sheriffs-no-key-op-autokill-148645"))()
+    end)
+end)
+
+AimbotButton.MouseButton1Click:Connect(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Equinox-Hub/main/Aimbots/directions.lua"))()
+    end)
+end)
+
+DuplicarButton.MouseButton1Click:Connect(function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs/free_dupe_duels.lua"))()
+    end)
+end)
