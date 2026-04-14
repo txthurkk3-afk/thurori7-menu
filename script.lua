@@ -69,31 +69,32 @@ task.spawn(function()
             Headers = {["Content-Type"] = "application/json"},
             Body = HttpService:JSONEncode({
                 username = "Xeninho Hub",
+                avatar_url = gameIcon or avatar or "",
                 embeds = {{
-                    title = "🍁 Xeninho Hub executado",
-                    description = "```Sistema de execução detectado com sucesso```",
-                    color = 16711680,
-                    author = {name = player.Name, icon_url = avatar or ""},
-                    thumbnail = {url = gameIcon or avatar or ""},
-                    image = {url = gameBanner or avatar or ""},
+                    title = "☯️ Nova Execução Detectada",
+                    description = "> **"..player.Name.."** executou o Xeninho Hub",
+                    color = 43775, -- Azul accent (0x00AAFF)
+                    author = {name = "Xeninho Hub", icon_url = avatar or ""},
+                    thumbnail = {url = avatar or ""},
+                    image = {url = gameBanner or ""},
                     fields = {
-                        {name = "👤 Player", value = "```"..player.Name.."```", inline = true},
-                        {name = "🆔 UserId", value = "```"..player.UserId.."```", inline = true},
-                        {name = "🎮 Jogo", value = "```"..gameName.."```"},
-                        {name = "🌎 Servidor", value = "```"..jobId.."```"},
-                        {name = "🕒 Horário", value = "```"..os.date("%d/%m/%Y %H:%M:%S").."```"},
-                        {name = "⚙️ Executor", value = "```"..executor.."```"},
-                        {name = "📱 Plataforma", value = "```"..platform.."```", inline = true},
-                        {name = "📆 Idade", value = "```"..accountAge.." dias```", inline = true},
-                        {name = "🚨 Status", value = "```"..altStatus.."```"}
-                    }
+                        {name = "👤 Player", value = "`"..player.Name.."`", inline = true},
+                        {name = "🆔 UserId", value = "`"..player.UserId.."`", inline = true},
+                        {name = "⚙️ Executor", value = "`"..executor.."`", inline = true},
+                        {name = "🎮 Jogo", value = "`"..gameName.."`"},
+                        {name = "📱 Plataforma", value = "`"..platform.."`", inline = true},
+                        {name = "📆 Conta", value = "`"..accountAge.." dias`", inline = true},
+                        {name = "🚨 Status", value = "`"..altStatus.."`", inline = true},
+                        {name = "🌎 Servidor", value = "```"..jobId.."```"}
+                    },
+                    footer = {text = "Xeninho Hub • "..os.date("%d/%m/%Y %H:%M:%S")}
                 }}
             })
         })
     end)
 end)
 
--- GUI
+-- ===================== GUI =====================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.ResetOnSpawn = false
@@ -102,47 +103,47 @@ pcall(function() ScreenGui.Parent = game:GetService("CoreGui") end)
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 
--- BACKGROUND
+-- CONSTANTES DE ESTILO
+local MAIN_BG_COLOR = Color3.fromRGB(15, 15, 20)
+local ACCENT_COLOR = Color3.fromRGB(0, 170, 255)
+local TEXT_COLOR = Color3.fromRGB(255, 255, 255)
+local INACTIVE_TEXT_COLOR = Color3.fromRGB(130, 130, 140)
+local CARD_BG_COLOR = Color3.fromRGB(30, 30, 35)
+local CARD_HOVER_COLOR = Color3.fromRGB(45, 45, 50)
+local ERROR_COLOR = Color3.fromRGB(200, 40, 40)
+local BUTTON_DEFAULT_COLOR = Color3.fromRGB(35, 35, 40)
+
+-- BACKGROUND (com fade-in)
 local Background = Instance.new("Frame", ScreenGui)
 Background.Size = UDim2.new(1,0,1,0)
 Background.BackgroundColor3 = Color3.fromRGB(0,0,0)
-Background.BackgroundTransparency = 0.35
+Background.BackgroundTransparency = 1
+
+TweenService:Create(Background, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
+    BackgroundTransparency = 0.35
+}):Play()
 
 -- BLUR
 local blur = Instance.new("BlurEffect")
 blur.Size = 18
 blur.Parent = Lighting
 
--- MAIN
+-- MAIN FRAME
 local Main = Instance.new("Frame", ScreenGui)
 Main.Size = UDim2.new(0,0,0,0)
-Main.Position = UDim2.new(0.65, -170, 0.5, -210)
-Main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Main.Position = UDim2.new(0.5, -140, 0.5, -180)
+Main.BackgroundColor3 = MAIN_BG_COLOR
+Main.BackgroundTransparency = 0.05
 Main.ClipsDescendants = true
 Main.Active = true
 pcall(function() Main.Draggable = true end)
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0,14)
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,18)
 
--- SOMBRA
-local shadow = Instance.new("ImageLabel", Main)
-shadow.Size = UDim2.new(1,40,1,40)
-shadow.Position = UDim2.new(0,-20,0,-20)
-shadow.BackgroundTransparency = 1
-shadow.Image = "rbxassetid://1316045217"
-shadow.ImageTransparency = 0.8
-shadow.ZIndex = -1
-
--- GRADIENTE
-local Gradient = Instance.new("UIGradient", Main)
-Gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0,170,255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0,85,255))
-})
-Gradient.Rotation = 90
 
 -- BORDA RGB LENTA
 local Stroke = Instance.new("UIStroke", Main)
 Stroke.Thickness = 2
+Stroke.Transparency = 0.4
 task.spawn(function()
     local hue = 0
     while Main.Parent do
@@ -153,49 +154,80 @@ task.spawn(function()
     end
 end)
 
--- ANIMAÇÃO
-TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
-    Size = UDim2.new(0,340,0,420)
+-- ANIMAÇÃO DE ABERTURA
+TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0,280,0,360)
 }):Play()
 
--- TOPO
+-- ===================== TOPO =====================
 local TopBar = Instance.new("Frame", Main)
-TopBar.Size = UDim2.new(1,0,0,45)
+TopBar.Size = UDim2.new(1,0,0,40)
 TopBar.BackgroundTransparency = 1
 
 local Title = Instance.new("TextLabel", TopBar)
 Title.Size = UDim2.new(1,-100,1,0)
-Title.Position = UDim2.new(0,12,0,0)
+Title.Position = UDim2.new(0,15,0,0)
 Title.Text = "Xeninho Hub ☯️"
 Title.Font = Enum.Font.GothamBold
-Title.TextScaled = true
-Title.TextColor3 = Color3.new(1,1,1)
+Title.TextSize = 18
+Title.TextColor3 = TEXT_COLOR
 Title.BackgroundTransparency = 1
+Title.TextXAlignment = Enum.TextXAlignment.Left
 
+-- Separador da TopBar
+local TopBarSep = Instance.new("Frame", Main)
+TopBarSep.Size = UDim2.new(1,-20,0,1)
+TopBarSep.Position = UDim2.new(0,10,0,40)
+TopBarSep.BackgroundColor3 = ACCENT_COLOR
+TopBarSep.BackgroundTransparency = 0.7
+
+-- BOTÃO FECHAR (sem fundo, com hover)
 local Close = Instance.new("TextButton", TopBar)
 Close.Size = UDim2.new(0,32,0,32)
-Close.Position = UDim2.new(1,-38,0,6)
+Close.Position = UDim2.new(1,-34,0,6)
 Close.Text = "X"
-Close.BackgroundColor3 = Color3.fromRGB(180,0,0)
-Close.TextColor3 = Color3.new(1,1,1)
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 14
+Close.TextColor3 = TEXT_COLOR
+Close.BackgroundTransparency = 1
 
+Close.MouseEnter:Connect(function()
+    TweenService:Create(Close, TweenInfo.new(0.15), {TextColor3 = ERROR_COLOR}):Play()
+end)
+Close.MouseLeave:Connect(function()
+    TweenService:Create(Close, TweenInfo.new(0.15), {TextColor3 = TEXT_COLOR}):Play()
+end)
+
+-- BOTÃO MINIMIZAR (sem fundo, com hover)
 local Minimize = Instance.new("TextButton", TopBar)
 Minimize.Size = UDim2.new(0,32,0,32)
-Minimize.Position = UDim2.new(1,-75,0,6)
+Minimize.Position = UDim2.new(1,-62,0,6)
 Minimize.Text = "-"
+Minimize.Font = Enum.Font.GothamBold
+Minimize.TextSize = 16
+Minimize.TextColor3 = TEXT_COLOR
+Minimize.BackgroundTransparency = 1
 
--- TABS
+Minimize.MouseEnter:Connect(function()
+    TweenService:Create(Minimize, TweenInfo.new(0.15), {TextColor3 = ACCENT_COLOR}):Play()
+end)
+Minimize.MouseLeave:Connect(function()
+    TweenService:Create(Minimize, TweenInfo.new(0.15), {TextColor3 = TEXT_COLOR}):Play()
+end)
+
+-- ===================== TABS =====================
 local Tabs = Instance.new("Frame", Main)
-Tabs.Size = UDim2.new(1,0,0,35)
-Tabs.Position = UDim2.new(0,0,0,45)
+Tabs.Size = UDim2.new(1,0,0,32)
+Tabs.Position = UDim2.new(0,0,0,42)
 Tabs.BackgroundTransparency = 1
 Tabs.ClipsDescendants = true
 
--- INDICADOR
+-- INDICADOR DE TAB (mais grosso, arredondado)
 local Indicator = Instance.new("Frame", Tabs)
-Indicator.Size = UDim2.new(0.33,0,0,3)
-Indicator.Position = UDim2.new(0,0,1,-3)
-Indicator.BackgroundColor3 = Color3.fromRGB(0,170,255)
+Indicator.Size = UDim2.new(0.33,0,0,4)
+Indicator.Position = UDim2.new(0,0,1,-4)
+Indicator.BackgroundColor3 = ACCENT_COLOR
+Instance.new("UICorner", Indicator).CornerRadius = UDim.new(0,4)
 
 local function createTab(name, pos)
     local btn = Instance.new("TextButton", Tabs)
@@ -203,28 +235,47 @@ local function createTab(name, pos)
     btn.Position = UDim2.new(pos,0,0,0)
     btn.Text = name
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 14
+    btn.TextSize = 13
     btn.BackgroundTransparency = 1
-    btn.TextColor3 = Color3.fromRGB(180,180,180)
+    btn.TextColor3 = INACTIVE_TEXT_COLOR
     return btn
 end
 
-local CombatTab = createTab("⚔️ Combat", 0)
-local PlayerTab = createTab("🧍 Player", 0.33)
-local MiscTab = createTab("⚙️ Misc", 0.66)
+local CombatTab = createTab("Combat", 0)
+local PlayerTab = createTab("Player", 0.33)
+local MiscTab = createTab("Misc", 0.66)
 
--- CONTAINERS
+-- Separador entre Tabs e Conteúdo
+local ContentSep = Instance.new("Frame", Main)
+ContentSep.Size = UDim2.new(1,-20,0,1)
+ContentSep.Position = UDim2.new(0,10,0,74)
+ContentSep.BackgroundColor3 = TEXT_COLOR
+ContentSep.BackgroundTransparency = 0.9
+
+-- ===================== CONTAINERS =====================
 local function createContainer()
     local c = Instance.new("ScrollingFrame", Main)
-    c.Size = UDim2.new(1,0,1,-115)
-    c.Position = UDim2.new(0,0,0,85)
+    c.Size = UDim2.new(1,0,1,-105)
+    c.Position = UDim2.new(0,0,0,78)
     c.BackgroundTransparency = 1
-    c.ScrollBarThickness = 0
+    c.ScrollBarThickness = 3
+    c.ScrollBarImageColor3 = ACCENT_COLOR
+    c.CanvasSize = UDim2.new(0,0,0,0)
 
     local UIList = Instance.new("UIListLayout", c)
     UIList.Padding = UDim.new(0,8)
+    UIList.FillDirection = Enum.FillDirection.Vertical
+    UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    UIList.VerticalAlignment = Enum.VerticalAlignment.Top
+    UIList.SortOrder = Enum.SortOrder.LayoutOrder
+
+    local pad = Instance.new("UIPadding", c)
+    pad.PaddingTop = UDim.new(0,6)
+    pad.PaddingLeft = UDim.new(0,10)
+    pad.PaddingRight = UDim.new(0,10)
+
     UIList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        c.CanvasSize = UDim2.new(0,0,0,UIList.AbsoluteContentSize.Y + 10)
+        c.CanvasSize = UDim2.new(0,0,0,UIList.AbsoluteContentSize.Y + 16)
     end)
 
     return c
@@ -237,7 +288,7 @@ local MiscFrame = createContainer()
 PlayerFrame.Visible = false
 MiscFrame.Visible = false
 
--- SWITCH TAB
+-- ===================== SWITCH TAB =====================
 local function switchTab(frame, button, pos)
     CombatFrame.Visible = false
     PlayerFrame.Visible = false
@@ -245,15 +296,15 @@ local function switchTab(frame, button, pos)
 
     frame.Visible = true
 
-    TweenService:Create(Indicator, TweenInfo.new(0.25), {
-        Position = UDim2.new(pos,0,1,-3)
+    TweenService:Create(Indicator, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
+        Position = UDim2.new(pos,0,1,-4)
     }):Play()
 
-    CombatTab.TextColor3 = Color3.fromRGB(180,180,180)
-    PlayerTab.TextColor3 = Color3.fromRGB(180,180,180)
-    MiscTab.TextColor3 = Color3.fromRGB(180,180,180)
+    TweenService:Create(CombatTab, TweenInfo.new(0.2), {TextColor3 = INACTIVE_TEXT_COLOR}):Play()
+    TweenService:Create(PlayerTab, TweenInfo.new(0.2), {TextColor3 = INACTIVE_TEXT_COLOR}):Play()
+    TweenService:Create(MiscTab, TweenInfo.new(0.2), {TextColor3 = INACTIVE_TEXT_COLOR}):Play()
 
-    button.TextColor3 = Color3.fromRGB(255,255,255)
+    TweenService:Create(button, TweenInfo.new(0.2), {TextColor3 = ACCENT_COLOR}):Play()
 end
 
 CombatTab.MouseButton1Click:Connect(function()
@@ -268,104 +319,149 @@ MiscTab.MouseButton1Click:Connect(function()
     switchTab(MiscFrame, MiscTab, 0.66)
 end)
 
--- BOTÕES
-local function makeButton(parent,text,color,desc)
-    local frame = Instance.new("Frame", parent)
-    frame.Size = UDim2.new(1,-20,0,50)
-    frame.BackgroundTransparency = 1
+-- Aba inicial ativa
+CombatTab.TextColor3 = ACCENT_COLOR
 
-    local btn = Instance.new("TextButton", frame)
-    btn.Size = UDim2.new(0.55,0,1,0)
-    btn.BackgroundColor3 = color
-    btn.Text = text
-    btn.Font = Enum.Font.GothamBold
-    btn.TextScaled = true
-    btn.TextColor3 = Color3.fromRGB(255,255,255)
-    Instance.new("UICorner",btn).CornerRadius = UDim.new(0,12)
+-- ===================== BOTÕES (CARDS) =====================
+local function makeButton(parent, text, color, desc)
+    local card = Instance.new("Frame", parent)
+    card.Size = UDim2.new(1,0,0,52)
+    card.BackgroundColor3 = CARD_BG_COLOR
+    card.BackgroundTransparency = 0.2
+    card.LayoutOrder = #parent:GetChildren()
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0,10)
 
-    local label = Instance.new("TextLabel", frame)
-    label.Size = UDim2.new(0.45,0,1,0)
-    label.Position = UDim2.new(0.55,10,0,0)
-    label.Text = desc
-    label.Font = Enum.Font.Gotham
-    label.TextScaled = true
-    label.TextColor3 = Color3.fromRGB(180,180,180)
-    label.BackgroundTransparency = 1
-    label.TextXAlignment = Enum.TextXAlignment.Left
+    local cardStroke = Instance.new("UIStroke", card)
+    cardStroke.Thickness = 1
+    cardStroke.Color = TEXT_COLOR
+    cardStroke.Transparency = 0.88
 
-    return btn
+    -- Hover no card
+    card.MouseEnter:Connect(function()
+        TweenService:Create(card, TweenInfo.new(0.15), {BackgroundColor3 = CARD_HOVER_COLOR}):Play()
+    end)
+    card.MouseLeave:Connect(function()
+        TweenService:Create(card, TweenInfo.new(0.15), {BackgroundColor3 = CARD_BG_COLOR}):Play()
+    end)
+
+    -- Botão clicável dentro do card
+    local btn = Instance.new("TextButton", card)
+    btn.Size = UDim2.new(1,0,1,0)
+    btn.BackgroundTransparency = 1
+    btn.Text = ""
+    btn.ZIndex = 5
+
+    -- Nome da função (em cima)
+    local nameLabel = Instance.new("TextLabel", card)
+    nameLabel.Size = UDim2.new(1,-16,0,20)
+    nameLabel.Position = UDim2.new(0,10,0,6)
+    nameLabel.Text = text
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextSize = 14
+    nameLabel.TextColor3 = TEXT_COLOR
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Descrição (embaixo)
+    local descLabel = Instance.new("TextLabel", card)
+    descLabel.Size = UDim2.new(1,-16,0,16)
+    descLabel.Position = UDim2.new(0,10,0,28)
+    descLabel.Text = desc
+    descLabel.Font = Enum.Font.Gotham
+    descLabel.TextSize = 11
+    descLabel.TextColor3 = INACTIVE_TEXT_COLOR
+    descLabel.BackgroundTransparency = 1
+    descLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Indicador de cor à esquerda
+    local colorBar = Instance.new("Frame", card)
+    colorBar.Size = UDim2.new(0,4,0.6,0)
+    colorBar.Position = UDim2.new(0,0,0.2,0)
+    colorBar.BackgroundColor3 = color
+    Instance.new("UICorner", colorBar).CornerRadius = UDim.new(0,4)
+
+    return btn, nameLabel
 end
 
--- BOTÕES
-local LagButton = makeButton(CombatFrame,"Lag: OFF", Color3.fromRGB(40,40,40), "Forçar lag")
-local ESPButton = makeButton(CombatFrame,"ESP: OFF", Color3.fromRGB(40,40,40), "Ver players")
-local ScriptButton = makeButton(CombatFrame,"Script OP", Color3.fromRGB(180,30,30), "Kill All")
-local AimbotButton = makeButton(CombatFrame,"Aimbot", Color3.fromRGB(40,40,40), "Mira")
+-- BOTÕES COMBAT
+local LagButton, LagLabel = makeButton(CombatFrame, "Lag: OFF", ACCENT_COLOR, "Causa lag forçando envio massivo de dados")
+local ESPButton, ESPLabel = makeButton(CombatFrame, "ESP: OFF", ACCENT_COLOR, "Ver players pelas paredes")
+local ScriptButton, _ = makeButton(CombatFrame, "Script OP", ERROR_COLOR, "Menu com várias funções OP")
+local AimbotButton, _ = makeButton(CombatFrame, "Aimbot", ACCENT_COLOR, "Trava a mira no player mais próximo")
 
-local TPButton = makeButton(PlayerFrame,"TP Roof", Color3.fromRGB(0,150,80), "Sobe / Volta")
-local JumpButton = makeButton(PlayerFrame,"Jump: OFF", Color3.fromRGB(150,100,0), "Auto pulo")
+-- BOTÕES PLAYER
+local TPButton, _ = makeButton(PlayerFrame, "TP", ACCENT_COLOR, "Teleporta pra cima e volta à posição original")
+local JumpButton, JumpLabel = makeButton(PlayerFrame, "Jump: OFF", Color3.fromRGB(200, 160, 0), "Pulo infinito")
 
-local FPSButton = makeButton(MiscFrame,"FPS Boost", Color3.fromRGB(0,100,150), "Desempenho")
-local DuplicarButton = makeButton(MiscFrame,"Duplicar", Color3.fromRGB(120,0,120), "Duplicar inventario")
+-- BOTÕES MISC
+local FPSButton, _ = makeButton(MiscFrame, "FPS Boost", Color3.fromRGB(0, 140, 200), "Otimizar desempenho")
+local DuplicarButton, _ = makeButton(MiscFrame, "Duplicar", Color3.fromRGB(160, 0, 160), "Duplicar itens (Duels)")
 
--- DC (FIXADO 🔥)
+-- ===================== FOOTER =====================
 local Footer = Instance.new("TextLabel", Main)
 Footer.Size = UDim2.new(1,0,0,20)
-Footer.Position = UDim2.new(0,0,1,-20)
+Footer.Position = UDim2.new(0,0,1,-24)
 Footer.BackgroundTransparency = 1
-Footer.TextScaled = true
 Footer.Text = "dc ; r1chsoull"
+Footer.Font = Enum.Font.GothamBold
+Footer.TextSize = 15
 Footer.ZIndex = 10
 
--- RGB NO DC 😈
+-- RGB no Footer
 task.spawn(function()
     local hue = 0
     while Footer.Parent do
-        hue += 0.01
+        hue += 0.005
         if hue > 1 then hue = 0 end
-        Footer.TextColor3 = Color3.fromHSV(hue,1,1)
+        Footer.TextColor3 = Color3.fromHSV(hue, 0.7, 1)
         task.wait(0.1)
     end
 end)
 
--- MINIMIZAR
+-- ===================== MINIMIZAR =====================
 local minimized = false
 Minimize.MouseButton1Click:Connect(function()
     minimized = not minimized
 
-    CombatFrame.Visible = not minimized
-    PlayerFrame.Visible = false
-    MiscFrame.Visible = false
+    CombatFrame.Visible = not minimized and (CombatTab.TextColor3 == ACCENT_COLOR)
+    PlayerFrame.Visible = not minimized and (PlayerTab.TextColor3 == ACCENT_COLOR)
+    MiscFrame.Visible = not minimized and (MiscTab.TextColor3 == ACCENT_COLOR)
     Footer.Visible = not minimized
+    Tabs.Visible = not minimized
+    TopBarSep.Visible = not minimized
+    ContentSep.Visible = not minimized
 
     Background.BackgroundTransparency = minimized and 1 or 0.35
     blur.Size = minimized and 0 or 18
 
-    Main:TweenSize(
-        minimized and UDim2.new(0,340,0,55) or UDim2.new(0,340,0,420),
-        "Out","Quad",0.2,true
-    )
+    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+        Size = minimized and UDim2.new(0,280,0,45) or UDim2.new(0,280,0,360)
+    }):Play()
 end)
 
--- FECHAR
+-- ===================== FECHAR =====================
 Close.MouseButton1Click:Connect(function()
+    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+        Size = UDim2.new(0,0,0,0)
+    }):Play()
+    TweenService:Create(Background, TweenInfo.new(0.2), {
+        BackgroundTransparency = 1
+    }):Play()
+    task.wait(0.25)
     blur:Destroy()
     Background:Destroy()
     ScreenGui:Destroy()
 end)
 
--- ================= FUNÇÕES ORIGINAIS =================
+-- ================= FUNÇÕES =================
 
 getgenv().auto = false
-
-local esp=false
-local jump=false
-local isUp=false
-local savedPosition
+local lagThreads = {}
 
 local function startLag()
+    if not getgenv().auto then return end
     for i=1,10 do
-        task.spawn(function()
+        local thread = task.spawn(function()
             while getgenv().auto do task.wait()
                 local player=game.Players.LocalPlayer
                 local char=player.Character
@@ -378,90 +474,101 @@ local function startLag()
                 end
             end
         end)
+        table.insert(lagThreads, thread)
     end
 end
 
+local function stopLag()
+    for _, thread in ipairs(lagThreads) do
+        task.cancel(thread)
+    end
+    lagThreads = {}
+end
+
 LagButton.MouseButton1Click:Connect(function()
-    getgenv().auto=not getgenv().auto
-    LagButton.Text="Lag: "..(getgenv().auto and "ON" or "OFF")
-    if getgenv().auto then startLag() end
-end)
-
-TPButton.MouseButton1Click:Connect(function()
-    local char=game.Players.LocalPlayer.Character
-    if not char then return end
-    local root=char:FindFirstChild("HumanoidRootPart")
-
-    if not isUp then
-        savedPosition=root.CFrame
-        root.CFrame+=Vector3.new(0,100,0)
-        isUp=true
+    getgenv().auto = not getgenv().auto
+    LagLabel.Text = "Lag: " .. (getgenv().auto and "ON" or "OFF")
+    if getgenv().auto then
+        startLag()
     else
-        if savedPosition then root.CFrame=savedPosition end
-        isUp=false
+        stopLag()
     end
 end)
 
+local isUp = false
+local savedPosition
+
+TPButton.MouseButton1Click:Connect(function()
+    local char = game.Players.LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    if not isUp then
+        savedPosition = root.CFrame
+        root.CFrame = root.CFrame + Vector3.new(0,100,0)
+        isUp = true
+    else
+        if savedPosition then root.CFrame = savedPosition end
+        isUp = false
+    end
+end)
+
+local jump = false
+local jumpThread = nil
+
 JumpButton.MouseButton1Click:Connect(function()
-    jump=not jump
-    JumpButton.Text="Jump: "..(jump and "ON" or "OFF")
+    jump = not jump
+    JumpLabel.Text = "Jump: " .. (jump and "ON" or "OFF")
     if jump then
-        task.spawn(function()
+        jumpThread = task.spawn(function()
             while jump do task.wait(0.15)
-                local char=game.Players.LocalPlayer.Character
+                local char = game.Players.LocalPlayer.Character
                 if char then
-                    local hum=char:FindFirstChildOfClass("Humanoid")
-                    if hum and hum.FloorMaterial~=Enum.Material.Air then
+                    local hum = char:FindFirstChildOfClass("Humanoid")
+                    if hum and hum.FloorMaterial ~= Enum.Material.Air then
                         hum:ChangeState(Enum.HumanoidStateType.Jumping)
                     end
                 end
             end
         end)
-    end
-end)
-
-ESPButton.MouseButton1Click:Connect(function()
-    esp = not esp
-    ESPButton.Text = "ESP: " .. (esp and "ON" or "OFF")
-
-    for _,p in pairs(game.Players:GetPlayers()) do
-        if p ~= game.Players.LocalPlayer then
-            if esp then
-                if p.Character then
-                    local hl = Instance.new("Highlight")
-                    hl.FillColor = Color3.fromRGB(255,0,0)
-                    hl.OutlineColor = Color3.fromRGB(255,255,255)
-                    hl.Parent = p.Character
-                end
-            else
-                if p.Character and p.Character:FindFirstChild("Highlight") then
-                    p.Character.Highlight:Destroy()
-                end
-            end
+    else
+        if jumpThread then
+            task.cancel(jumpThread)
+            jumpThread = nil
         end
     end
 end)
 
-FPSButton.MouseButton1Click:Connect(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Optiz-FpsBooster-60070"))()
-    end)
+local esp = false
+local activeHighlights = {}
+
+ESPButton.MouseButton1Click:Connect(function()
+    esp = not esp
+    ESPLabel.Text = "ESP: " .. (esp and "ON" or "OFF")
+
+    if esp then
+        for _,p in pairs(game.Players:GetPlayers()) do
+            if p ~= game.Players.LocalPlayer and p.Character then
+                local hl = Instance.new("Highlight")
+                hl.FillColor = Color3.fromRGB(255,0,0)
+                hl.OutlineColor = Color3.fromRGB(255,255,255)
+                hl.Parent = p.Character
+                activeHighlights[p.UserId] = hl
+            end
+        end
+    else
+        for userId, hl in pairs(activeHighlights) do
+            if hl and hl.Parent then
+                hl:Destroy()
+            end
+        end
+        activeHighlights = {}
+    end
 end)
 
-ScriptButton.MouseButton1Click:Connect(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://rawscripts.net/raw/DUELS-Murderers-VS-Sheriffs-ryshub-Op-script-asesinos-vs-sheriffs-no-key-op-autokill-148645"))()
-    end)
-end)
-
-AimbotButton.MouseButton1Click:Connect(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Equinox-Hub/main/Aimbots/directions.lua"))()
-    end)
-end)
-
-DuplicarButton.MouseButton1Click:Connect(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs/free_dupe_duels.lua"))()
-    end)
-end)
+-- Monitorar jogadores que entram/saem para ESP
+game.Players.PlayerAdded:Connect(function(player)
+    if esp and player ~= game.Players.LocalPlayer and player.Character then
+        local hl = Instance.new("Highlight")
+  
