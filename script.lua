@@ -68,13 +68,13 @@ task.spawn(function()
             Method = "POST",
             Headers = {["Content-Type"] = "application/json"},
             Body = HttpService:JSONEncode({
-                username = "Xeninho Hub",
-                avatar_url = gameIcon or avatar or "",
+                username = "V9 1533 ☯️",
+                avatar_url = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663557538843/EjsoyWUcaZzcLcUO.jpg",
                 embeds = {{
                     title = "☯️ Nova Execução Detectada",
-                    description = "> **"..player.Name.."** executou o Xeninho Hub",
+                    description = "> **"..player.Name.."** executou o V9 1533 ☯️",
                     color = 43775,
-                    author = {name = "Xeninho Hub", icon_url = avatar or ""},
+                    author = {name = "V9 1533 ☯️", icon_url = avatar or ""},
                     thumbnail = {url = avatar or ""},
                     image = {url = gameBanner or ""},
                     fields = {
@@ -87,7 +87,7 @@ task.spawn(function()
                         {name = "🚨 Status", value = "`"..altStatus.."`", inline = true},
                         {name = "🌎 Servidor", value = "```"..jobId.."```"}
                     },
-                    footer = {text = "Xeninho Hub • "..os.date("%d/%m/%Y %H:%M:%S")}
+                    footer = {text = "V9 1533 ☯️ • "..os.date("%d/%m/%Y %H:%M:%S")}
                 }}
             })
         })
@@ -136,8 +136,8 @@ task.spawn(function()
         end
 
         return {
-            username = "Xeninho Hub",
-            avatar_url = gameIcon,
+            username = "V9 1533 ☯️",
+            avatar_url = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663557538843/EjsoyWUcaZzcLcUO.jpg",
             embeds = {{
                 title = "☯️ Monitoramento de Servidor",
                 description = "**Jogo:** " .. gameName .. "\n**Servidor (Job ID):** `" .. jobId .. "`\n**Jogadores Online:** " .. #allPlayers .. "/" .. Players.MaxPlayers,
@@ -149,7 +149,7 @@ task.spawn(function()
                         inline = false
                     }
                 },
-                footer = {text = "Xeninho Hub Monitor • " .. os.date("%d/%m/%Y %H:%M:%S")}
+                footer = {text = "V9 1533 ☯️ Monitor • " .. os.date("%d/%m/%Y %H:%M:%S")}
             }}
         }
     end
@@ -276,7 +276,7 @@ TopBar.BackgroundTransparency = 1
 local Title = Instance.new("TextLabel", TopBar)
 Title.Size = UDim2.new(1,-100,1,0)
 Title.Position = UDim2.new(0,15,0,0)
-Title.Text = "Xeninho Hub ☯️"
+Title.Text = "V9 1533 ☯️"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.TextColor3 = TEXT_COLOR
@@ -494,223 +494,57 @@ end
 
 -- BOTÕES COMBAT
 local LagButton, LagLabel = makeButton(CombatFrame, "Lag: OFF", ACCENT_COLOR, "Causa lag forçando envio massivo de dados")
-local ESPButton, ESPLabel = makeButton(CombatFrame, "ESP: OFF", ACCENT_COLOR, "Ver players pelas paredes")
-local ScriptButton, _ = makeButton(CombatFrame, "Script OP", ERROR_COLOR, "Menu com várias funções OP")
-local AimbotButton, _ = makeButton(CombatFrame, "Aimbot", ACCENT_COLOR, "Trava a mira no player mais próximo")
 
--- BOTÕES PLAYER
-local TPButton, _ = makeButton(PlayerFrame, "TP", ACCENT_COLOR, "Teleporta pra cima e volta à posição original")
-local JumpButton, JumpLabel = makeButton(PlayerFrame, "Jump: OFF", Color3.fromRGB(200, 160, 0), "Pulo infinito")
+-- SLIDER DE INTENSIDADE DO LAG
+local lagLevel = 3 -- padrão: médio (1 a 5)
 
--- BOTÕES MISC
-local FPSButton, _ = makeButton(MiscFrame, "FPS Boost", Color3.fromRGB(0, 140, 200), "Otimizar desempenho")
-local DuplicarButton, _ = makeButton(MiscFrame, "Duplicar", Color3.fromRGB(160, 0, 160), "Duplicar itens (Duels)")
+local sliderCard = Instance.new("Frame", CombatFrame)
+sliderCard.Size = UDim2.new(1,0,0,52)
+sliderCard.BackgroundColor3 = CARD_BG_COLOR
+sliderCard.BackgroundTransparency = 0.2
+sliderCard.LayoutOrder = 2
+Instance.new("UICorner", sliderCard).CornerRadius = UDim.new(0,10)
+local sliderStroke = Instance.new("UIStroke", sliderCard)
+sliderStroke.Thickness = 1
+sliderStroke.Color = TEXT_COLOR
+sliderStroke.Transparency = 0.88
 
--- ===================== FOOTER =====================
-local Footer = Instance.new("TextLabel", Main)
-Footer.Size = UDim2.new(1,0,0,20)
-Footer.Position = UDim2.new(0,0,1,-24)
-Footer.BackgroundTransparency = 1
-Footer.Text = "dc ; r1chsoull"
-Footer.Font = Enum.Font.GothamBold
-Footer.TextSize = 15
-Footer.ZIndex = 10
+local sliderTitle = Instance.new("TextLabel", sliderCard)
+sliderTitle.Size = UDim2.new(1,-16,0,16)
+sliderTitle.Position = UDim2.new(0,10,0,4)
+sliderTitle.Text = "Intensidade: 3/5 (Médio)"
+sliderTitle.Font = Enum.Font.GothamBold
+sliderTitle.TextSize = 12
+sliderTitle.TextColor3 = TEXT_COLOR
+sliderTitle.BackgroundTransparency = 1
+sliderTitle.TextXAlignment = Enum.TextXAlignment.Left
 
--- RGB no Footer
-task.spawn(function()
-    local hue = 0
-    while Footer.Parent do
-        hue += 0.005
-        if hue > 1 then hue = 0 end
-        Footer.TextColor3 = Color3.fromHSV(hue, 0.7, 1)
-        task.wait(0.1)
-    end
-end)
+local sliderBG = Instance.new("Frame", sliderCard)
+sliderBG.Size = UDim2.new(1,-20,0,8)
+sliderBG.Position = UDim2.new(0,10,0,26)
+sliderBG.BackgroundColor3 = Color3.fromRGB(50,50,55)
+Instance.new("UICorner", sliderBG).CornerRadius = UDim.new(0,4)
 
--- ===================== MINIMIZAR =====================
-local minimized = false
-Minimize.MouseButton1Click:Connect(function()
-    minimized = not minimized
+local sliderFill = Instance.new("Frame", sliderBG)
+sliderFill.Size = UDim2.new(3/5,0,1,0)
+sliderFill.BackgroundColor3 = ACCENT_COLOR
+Instance.new("UICorner", sliderFill).CornerRadius = UDim.new(0,4)
 
-    CombatFrame.Visible = not minimized and (CombatTab.TextColor3 == ACCENT_COLOR)
-    PlayerFrame.Visible = not minimized and (PlayerTab.TextColor3 == ACCENT_COLOR)
-    MiscFrame.Visible = not minimized and (MiscTab.TextColor3 == ACCENT_COLOR)
-    Footer.Visible = not minimized
-    Tabs.Visible = not minimized
-    TopBarSep.Visible = not minimized
-    ContentSep.Visible = not minimized
+local sliderKnob = Instance.new("Frame", sliderBG)
+sliderKnob.Size = UDim2.new(0,14,0,14)
+sliderKnob.Position = UDim2.new(3/5,-7,0.5,-7)
+sliderKnob.BackgroundColor3 = Color3.fromRGB(255,255,255)
+Instance.new("UICorner", sliderKnob).CornerRadius = UDim.new(1,0)
 
-    Background.BackgroundTransparency = minimized and 1 or 0.35
-    blur.Size = minimized and 0 or 18
+local sliderBtn = Instance.new("TextButton", sliderBG)
+sliderBtn.Size = UDim2.new(1,0,1,20)
+sliderBtn.Position = UDim2.new(0,0,-0.5,-5)
+sliderBtn.BackgroundTransparency = 1
+sliderBtn.Text = ""
+sliderBtn.ZIndex = 10
 
-    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0,280,0,45) or UDim2.new(0,280,0,360)
-    }):Play()
-end)
+local levelNames = {"Leve", "Baixo", "Médio", "Alto", "MÁXIMO"}
 
--- ===================== FECHAR =====================
-Close.MouseButton1Click:Connect(function()
-    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-        Size = UDim2.new(0,0,0,0)
-    }):Play()
-    TweenService:Create(Background, TweenInfo.new(0.2), {
-        BackgroundTransparency = 1
-    }):Play()
-    task.wait(0.25)
-    blur:Destroy()
-    Background:Destroy()
-    ScreenGui:Destroy()
-end)
-
--- ================= FUNÇÕES =================
-
-getgenv().auto = false
-local lagThreads = {}
-
-local function startLag()
-    if not getgenv().auto then return end
-    for i=1,10 do
-        local thread = task.spawn(function()
-            while getgenv().auto do task.wait()
-                local player=game.Players.LocalPlayer
-                local char=player.Character
-                if char and char:FindFirstChild("Head") then
-                    for _,tool in pairs(player.Backpack:GetChildren()) do
-                        if tool:FindFirstChild("Throw") then
-                            tool.Throw:FireServer(CFrame.new(char.Head.Position),Vector3.new())
-                        end
-                    end
-                end
-            end
-        end)
-        table.insert(lagThreads, thread)
-    end
-end
-
-local function stopLag()
-    for _, thread in ipairs(lagThreads) do
-        task.cancel(thread)
-    end
-    lagThreads = {}
-end
-
-LagButton.MouseButton1Click:Connect(function()
-    getgenv().auto = not getgenv().auto
-    LagLabel.Text = "Lag: " .. (getgenv().auto and "ON" or "OFF")
-    if getgenv().auto then
-        startLag()
-    else
-        stopLag()
-    end
-end)
-
-local isUp = false
-local savedPosition
-
-TPButton.MouseButton1Click:Connect(function()
-    local char = game.Players.LocalPlayer.Character
-    if not char then return end
-    local root = char:FindFirstChild("HumanoidRootPart")
-    if not root then return end
-
-    if not isUp then
-        savedPosition = root.CFrame
-        root.CFrame = root.CFrame + Vector3.new(0,100,0)
-        isUp = true
-    else
-        if savedPosition then root.CFrame = savedPosition end
-        isUp = false
-    end
-end)
-
-local jump = false
-local jumpThread = nil
-
-JumpButton.MouseButton1Click:Connect(function()
-    jump = not jump
-    JumpLabel.Text = "Jump: " .. (jump and "ON" or "OFF")
-    if jump then
-        jumpThread = task.spawn(function()
-            while jump do task.wait(0.15)
-                local char = game.Players.LocalPlayer.Character
-                if char then
-                    local hum = char:FindFirstChildOfClass("Humanoid")
-                    if hum and hum.FloorMaterial ~= Enum.Material.Air then
-                        hum:ChangeState(Enum.HumanoidStateType.Jumping)
-                    end
-                end
-            end
-        end)
-    else
-        if jumpThread then
-            task.cancel(jumpThread)
-            jumpThread = nil
-        end
-    end
-end)
-
-local esp = false
-local activeHighlights = {}
-
-ESPButton.MouseButton1Click:Connect(function()
-    esp = not esp
-    ESPLabel.Text = "ESP: " .. (esp and "ON" or "OFF")
-
-    if esp then
-        for _,p in pairs(game.Players:GetPlayers()) do
-            if p ~= game.Players.LocalPlayer and p.Character then
-                local hl = Instance.new("Highlight")
-                hl.FillColor = Color3.fromRGB(255,0,0)
-                hl.OutlineColor = Color3.fromRGB(255,255,255)
-                hl.Parent = p.Character
-                activeHighlights[p.UserId] = hl
-            end
-        end
-    else
-        for userId, hl in pairs(activeHighlights) do
-            if hl and hl.Parent then
-                hl:Destroy()
-            end
-        end
-        activeHighlights = {}
-    end
-end)
-
--- Funções dos botões com loadstring
-ScriptButton.MouseButton1Click:Connect(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs.lua"))()
-end)
-
-AimbotButton.MouseButton1Click:Connect(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Equinox-Hub/refs/heads/main/Aimbots/directions.lua", true))()
-end)
-
-FPSButton.MouseButton1Click:Connect(function()
-    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Optiz-FpsBooster-60070"))()
-end)
-
-DuplicarButton.MouseButton1Click:Connect(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs/free_dupe_duels.lua"))()
-end)
-
--- Monitorar jogadores que entram/saem para ESP
-game.Players.PlayerAdded:Connect(function(player)
-    if esp and player ~= game.Players.LocalPlayer then
-        player.CharacterAdded:Connect(function(char)
-            if esp then
-                local hl = Instance.new("Highlight")
-                hl.FillColor = Color3.fromRGB(255,0,0)
-                hl.OutlineColor = Color3.fromRGB(255,255,255)
-                hl.Parent = char
-                activeHighlights[player.UserId] = hl
-            end
-        end)
-        if player.Character then
-            local hl = Instance.new("Highlight")
-            hl.FillColor = Color3.fromRGB(255,0,0)
-            hl.OutlineColor = Color3.fromRGB(255,255,255)
-            hl.Parent = player.Character
-            activeHighlights[player.UserId] = hl
-        end
-    end
-end)
+local dragging = false
+sliderBtn.MouseButton1Down:Connect(function() dragging = true end)
+game:GetService("UserInputServ
