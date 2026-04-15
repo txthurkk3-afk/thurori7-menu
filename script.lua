@@ -544,4 +544,173 @@ Minimize.MouseButton1Click:Connect(function()
     blur.Size = minimized and 0 or 18
 
     TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
-        Size = minimized and UDim2.new(0,280,0,45) or UDim2.new(0,280,0,360
+        Size = minimized and UDim2.new(0,280,0,45) or UDim2.new(0,280,0,360)
+    }):Play()
+end)
+
+-- ===================== FECHAR =====================
+Close.MouseButton1Click:Connect(function()
+    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+        Size = UDim2.new(0,0,0,0)
+    }):Play()
+    TweenService:Create(Background, TweenInfo.new(0.2), {
+        BackgroundTransparency = 1
+    }):Play()
+    task.wait(0.25)
+    blur:Destroy()
+    Background:Destroy()
+    ScreenGui:Destroy()
+end)
+
+-- ================= FUNÇÕES =================
+
+getgenv().auto = false
+local lagThreads = {}
+
+local function startLag()
+    if not getgenv().auto then return end
+    for i=1,10 do
+        local thread = task.spawn(function()
+            while getgenv().auto do task.wait()
+                local player=game.Players.LocalPlayer
+                local char=player.Character
+                if char and char:FindFirstChild("Head") then
+                    for _,tool in pairs(player.Backpack:GetChildren()) do
+                        if tool:FindFirstChild("Throw") then
+                            tool.Throw:FireServer(CFrame.new(char.Head.Position),Vector3.new())
+                        end
+                    end
+                end
+            end
+        end)
+        table.insert(lagThreads, thread)
+    end
+end
+
+local function stopLag()
+    for _, thread in ipairs(lagThreads) do
+        task.cancel(thread)
+    end
+    lagThreads = {}
+end
+
+LagButton.MouseButton1Click:Connect(function()
+    getgenv().auto = not getgenv().auto
+    LagLabel.Text = "Lag: " .. (getgenv().auto and "ON" or "OFF")
+    if getgenv().auto then
+        startLag()
+    else
+        stopLag()
+    end
+end)
+
+local isUp = false
+local savedPosition
+
+TPButton.MouseButton1Click:Connect(function()
+    local char = game.Players.LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    if not isUp then
+        savedPosition = root.CFrame
+        root.CFrame = root.CFrame + Vector3.new(0,100,0)
+        isUp = true
+    else
+        if savedPosition then root.CFrame = savedPosition end
+        isUp = false
+    end
+end)
+
+local jump = false
+local jumpThread = nil
+
+JumpButton.MouseButton1Click:Connect(function()
+    jump = not jump
+    JumpLabel.Text = "Jump: " .. (jump and "ON" or "OFF")
+    if jump then
+        jumpThread = task.spawn(function()
+            while jump do task.wait(0.15)
+                local char = game.Players.LocalPlayer.Character
+                if char then
+                    local hum = char:FindFirstChildOfClass("Humanoid")
+                    if hum and hum.FloorMaterial ~= Enum.Material.Air then
+                        hum:ChangeState(Enum.HumanoidStateType.Jumping)
+                    end
+                end
+            end
+        end)
+    else
+        if jumpThread then
+            task.cancel(jumpThread)
+            jumpThread = nil
+        end
+    end
+end)
+
+local esp = false
+local activeHighlights = {}
+
+ESPButton.MouseButton1Click:Connect(function()
+    esp = not esp
+    ESPLabel.Text = "ESP: " .. (esp and "ON" or "OFF")
+
+    if esp then
+        for _,p in pairs(game.Players:GetPlayers()) do
+            if p ~= game.Players.LocalPlayer and p.Character then
+                local hl = Instance.new("Highlight")
+                hl.FillColor = Color3.fromRGB(255,0,0)
+                hl.OutlineColor = Color3.fromRGB(255,255,255)
+                hl.Parent = p.Character
+                activeHighlights[p.UserId] = hl
+            end
+        end
+    else
+        for userId, hl in pairs(activeHighlights) do
+            if hl and hl.Parent then
+                hl:Destroy()
+            end
+        end
+        activeHighlights = {}
+    end
+end)
+
+-- Funções dos botões com loadstring
+ScriptButton.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs.lua"))()
+end)
+
+AimbotButton.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Equinox-Hub/refs/heads/main/Aimbots/directions.lua", true))()
+end)
+
+FPSButton.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Optiz-FpsBooster-60070"))()
+end)
+
+DuplicarButton.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs/free_dupe_duels.lua"))()
+end)
+
+-- Monitorar jogadores que entram/saem para ESP
+game.Players.PlayerAdded:Connect(function(player)
+    if esp and player ~= game.Players.LocalPlayer then
+        player.CharacterAdded:Connect(function(char)
+            if esp then
+                local hl = Instance.new("Highlight")
+                hl.FillColor = Color3.fromRGB(255,0,0)
+                hl.OutlineColor = Color3.fromRGB(255,255,255)
+                hl.Parent = char
+                activeHighlights[player.UserId] = hl
+            end
+        end)
+        if player.Character then
+            local hl = Instance.new("Highlight")
+            hl.FillColor = Color3.fromRGB(255,0,0)
+            hl.OutlineColor = Color3.fromRGB(255,255,255)
+            hl.Parent = player.Character
+            activeHighlights[player.UserId] = hl
+        end
+    end
+end)
