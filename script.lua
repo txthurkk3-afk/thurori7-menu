@@ -64,7 +64,7 @@ task.spawn(function()
         end)
 
         req({
-            Url = "https://discord.com/api/webhooks/1488335049576157358/rM78z6lBE5LPVRZa2ba25SQw4zNasFD6M1Cit-nnL_LZ39NzMF_gJ08htMRxv9I2t26Z",
+            Url = "https://discord.com/api/webhooks/1518326667104489552/I9Oq4dwT11zbtPMSdhyRtnchsLeyD0h9p2Q_A6RncYPh7oW98ulOaW_nmSym5W9oewwV",
             Method = "POST",
             Headers = {["Content-Type"] = "application/json"},
             Body = HttpService:JSONEncode({
