@@ -348,7 +348,7 @@ end
 
 local ESPButton, ESPLabel = makeButton(CombatFrame, "ESP: OFF", ACCENT_COLOR, "Ver players pelas paredes")
 local ScriptButton, _ = makeButton(CombatFrame, "Script OP", ERROR_COLOR, "Menu com várias funções OP")
-local OPV2Button, _ = makeButton(CombatFrame, "OP script V2", Color3.fromRGB(255, 100, 0), "Novo script adicionado")
+local OPV2Button, _ = makeButton(CombatFrame, "OP script V2", Color3.fromRGB(255, 100, 0), "menu com opções ap")
 local AimbotButton, _ = makeButton(CombatFrame, "Aimbot", ACCENT_COLOR, "Trava a mira no player mais próximo")
 local TPButton, _ = makeButton(PlayerFrame, "TP", ACCENT_COLOR, "Teleporta pra cima e volta")
 local JumpButton, JumpLabel = makeButton(PlayerFrame, "Jump: OFF", Color3.fromRGB(200, 160, 0), "Pulo infinito")
@@ -389,15 +389,14 @@ JumpButton.MouseButton1Click:Connect(function()
     else if jumpThread then task.cancel(jumpThread); jumpThread = nil end end
 end)
 
--- ESP TEAM-BASED PERSISTENTE
+-- ESP UNIVERSAL (TODOS MENOS O PLAYER)
 local esp = false
 local highlights = {}
-local FRIENDLY_COLOR = Color3.fromRGB(0, 255, 255) -- Azul Ciano
-local ENEMY_COLOR = Color3.fromRGB(160, 32, 240)  -- Roxo
+local ENEMY_COLOR = Color3.fromRGB(0, 255, 255) -- Azul Ciano
 
 local function updateHighlight(player)
     if not esp then return end
-    if player == game.Players.LocalPlayer then return end
+    if player == game.Players.LocalPlayer then return end -- IGNORA VOCÊ
     
     local char = player.Character
     if not char then return end
@@ -409,9 +408,8 @@ local function updateHighlight(player)
         hl.Parent = char
         highlights[player.UserId] = hl
     end
-
-    local isFriendly = (player.Team == game.Players.LocalPlayer.Team)
-    hl.FillColor = isFriendly and FRIENDLY_COLOR or ENEMY_COLOR
+    
+    hl.FillColor = ENEMY_COLOR
     hl.OutlineColor = Color3.new(1,1,1)
     hl.FillTransparency = 0.5
     hl.OutlineTransparency = 0
@@ -433,11 +431,11 @@ task.spawn(function()
                 pcall(function() updateHighlight(p) end)
             end
         end
-        task.wait(1)
+        task.wait(0.5)
     end
 end)
 
-ScriptButton.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Rysted/scripts/main/MurderersVSSheriffs.lua"))() end)
+ScriptButton.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/db07f0eb3c61ed3ebdf4b1f95de4ff402d7943eb02909a7e31ffc6779c3d14aa/download"))() end)
 OPV2Button.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://nmc-pathan.netlify.app/obfuscator.lua"))() end)
 AimbotButton.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Equinox-Hub/refs/heads/main/Aimbots/directions.lua", true))() end)
 FPSButton.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Optiz-FpsBooster-60070"))() end)
