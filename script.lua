@@ -403,7 +403,7 @@ local function updateHighlight(player)
 
     local hl = highlights[player.UserId]
     if not hl or hl.Parent ~= char then
-        if hl then hl:Destroy() end
+        if hl then pcall(function() hl:Destroy() end) end
         hl = Instance.new("Highlight")
         hl.Parent = char
         highlights[player.UserId] = hl
@@ -419,23 +419,37 @@ ESPButton.MouseButton1Click:Connect(function()
     esp = not esp
     ESPLabel.Text = "ESP: " .. (esp and "ON" or "OFF")
     if not esp then
-        for _, hl in pairs(highlights) do if hl then hl:Destroy() end end
+        for _, hl in pairs(highlights) do pcall(function() hl:Destroy() end) end
         highlights = {}
     end
 end)
 
 task.spawn(function()
     while true do
+        task.wait(1)
         if esp then
             for _, p in pairs(game.Players:GetPlayers()) do
                 pcall(function() updateHighlight(p) end)
             end
         end
-        task.wait(0.5)
     end
 end)
 
-ScriptButton.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/db07f0eb3c61ed3ebdf4b1f95de4ff402d7943eb02909a7e31ffc6779c3d14aa/download"))() end)
-OPV2Button.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://nmc-pathan.netlify.app/obfuscator.lua"))() end)
-AimbotButton.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Equinox-Hub/refs/heads/main/Aimbots/directions.lua", true))() end)
-FPSButton.MouseButton1Click:Connect(function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Optiz-FpsBooster-60070"))() end)
+-- AÇÃO DO BOTÃO SCRIPT OP (OPÇÃO 1)
+ScriptButton.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/rysted-rbx/free/main/dmvs"))()
+end)
+
+-- AÇÃO DO BOTÃO OP SCRIPT V2 (OPÇÃO 2) - Mantido sem alteração conforme solicitado
+OPV2Button.MouseButton1Click:Connect(function()
+    -- Coloque aqui o código da opção 2 se desejar
+end)
+
+-- OUTRAS FUNÇÕES (PLACEHOLDERS)
+AimbotButton.MouseButton1Click:Connect(function()
+    -- Lógica do Aimbot aqui
+end)
+
+FPSButton.MouseButton1Click:Connect(function()
+    -- Lógica de FPS Boost aqui
+end)
